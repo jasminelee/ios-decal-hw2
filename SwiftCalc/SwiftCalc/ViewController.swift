@@ -8,6 +8,34 @@
 
 import UIKit
 
+struct Stack<Element> {
+    var items = [String]()
+    mutating func push(_ item: String) {
+        items.append(item)
+    }
+    mutating func pop() -> String {
+        return items.removeLast()
+    }
+    
+    var topItem: String? {
+        return items.isEmpty ? nil : items[items.count-1]
+    }
+    
+    mutating func removeAll() {
+        items = [String] ()
+    }
+    
+    mutating func all() -> String {
+        let stringRepresentation = items.joined(separator: "")
+        return stringRepresentation
+    }
+    
+    var size: Int {
+        return items.count
+    }
+}
+
+
 class ViewController: UIViewController {
     // MARK: Width and Height of Screen for Layout
     var w: CGFloat!
@@ -22,6 +50,9 @@ class ViewController: UIViewController {
     // TODO: This looks like a good place to add some data structures.
     //       One data structure is initialized below for reference.
     var someDataStructure: [String] = [""]
+    var numberStack = Stack<String>()
+    var currNumber = ""
+    var displayString = ""
     
 
     override func viewDidLoad() {
@@ -53,6 +84,10 @@ class ViewController: UIViewController {
     //       Modify this one or create your own.
     func updateResultLabel(_ content: String) {
         print("Update me like one of those PCs")
+        let numChars = content.characters.count
+        if numChars <= 7 {
+            resultLabel.text = content
+        }
     }
     
     
@@ -78,14 +113,37 @@ class ViewController: UIViewController {
     
     // REQUIRED: The responder to a number button being pressed.
     func numberPressed(_ sender: CustomButton) {
-        guard Int(sender.content) != nil else { return }
-        print("The number \(sender.content) was pressed")
-        // Fill me in!
+        let content = sender.content
+        guard Int(content) != nil else { return }
+        if displayString.characters.count < 7 {
+            print("The number \(content) was pressed and added to the stack")
+            if displayString == "0" {
+                displayString = content
+                currNumber = content
+            } else {
+                displayString += content
+                currNumber += content
+            }
+            updateResultLabel(displayString)
+        }
     }
     
     // REQUIRED: The responder to an operator button being pressed.
     func operatorPressed(_ sender: CustomButton) {
         // Fill me in!
+        if sender.content == "C" {
+            numberStack.removeAll()
+            displayString = "0"
+            currNumber = "0"
+            updateResultLabel(displayString)
+        } else if sender.content == "+/-" && currNumber.characters.count <= 7 {
+            let numberStr: String = currNumber
+            let numberInt: Int = Int(numberStr)! * -1
+            let displayNumber:String = String(numberInt)
+            currNumber = String(numberInt)
+            displayString = displayNumber
+            updateResultLabel(displayString)
+        }
     }
     
     // REQUIRED: The responder to a number or operator button being pressed.
