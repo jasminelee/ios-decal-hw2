@@ -149,6 +149,13 @@ class ViewController: UIViewController {
     // REQUIRED: The responder to a number or operator button being pressed.
     func buttonPressed(_ sender: CustomButton) {
        // Fill me in!
+        let content = sender.content
+        if currNumber != "0" && content == "0" {
+            currNumber += "0"
+            displayString += "0"
+            updateResultLabel(displayString)
+        }
+        
     }
     
     // IMPORTANT: Do NOT change any of the code below.
