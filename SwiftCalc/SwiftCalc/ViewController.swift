@@ -51,8 +51,10 @@ class ViewController: UIViewController {
     //       One data structure is initialized below for reference.
     var someDataStructure: [String] = [""]
     var numberStack = Stack<String>()
+    var operatorStack = Stack<String>()
     var currNumber = ""
     var displayString = ""
+    var mathOperators: [String] = ["+", "-","/","*"]
     
 
     override func viewDidLoad() {
@@ -101,7 +103,17 @@ class ViewController: UIViewController {
     //       Modify this one or create your own.
     func intCalculate(a: Int, b:Int, operation: String) -> Int {
         print("Calculation requested for \(a) \(operation) \(b)")
-        return 0
+        var result = Int()
+        if operation == "+" {
+            result = a + b
+        } else if operation == "-" {
+            result = a - b
+        } else if operation == "/" {
+            result = a / b
+        } else if operation == "*" {
+            result = a * b
+        }
+        return result
     }
     
     // TODO: A general calculate method for doubles
@@ -135,15 +147,30 @@ class ViewController: UIViewController {
             numberStack.removeAll()
             displayString = "0"
             currNumber = "0"
-            updateResultLabel(displayString)
         } else if sender.content == "+/-" && currNumber.characters.count <= 7 {
             let numberStr: String = currNumber
             let numberInt: Int = Int(numberStr)! * -1
             let displayNumber:String = String(numberInt)
             currNumber = String(numberInt)
             displayString = displayNumber
-            updateResultLabel(displayString)
+        } else if sender.content == "=" {
+            numberStack.push(currNumber)
+            if operatorStack.size > 0 {
+                let operand2: Int = Int(numberStack.pop())!
+                let operand1: Int = Int(numberStack.pop())!
+                let operation: String = operatorStack.pop()
+                let result: Int = intCalculate(a: operand1, b: operand2, operation: operation)
+                currNumber = String(result)
+                numberStack.push(currNumber)
+            }
+            displayString = currNumber
+        } else if mathOperators.contains(sender.content) { // +,-,/,* case
+            numberStack.push(currNumber)
+            displayString = ""
+            operatorStack.push(sender.content)
+            currNumber = ""
         }
+        updateResultLabel(displayString)
     }
     
     // REQUIRED: The responder to a number or operator button being pressed.
