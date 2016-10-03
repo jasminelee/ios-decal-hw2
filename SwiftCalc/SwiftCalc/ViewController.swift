@@ -235,8 +235,7 @@ class ViewController: UIViewController {
                 displayString += "0"
             } else {
                 currNumber = "0"
-                displayString = "0"
-                
+                displayString = "0"                
             }
             updateResultLabel(displayString)
         }
