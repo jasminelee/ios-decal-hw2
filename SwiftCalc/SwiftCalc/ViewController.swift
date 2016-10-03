@@ -159,10 +159,11 @@ class ViewController: UIViewController {
         guard Int(content) != nil else { return }
         if displayString.characters.count < 7 {
             print (operatorQueue, displayString, currNumber, numberStack)
-            if (displayString == "0" || displayString == "") && (operatorQueue.size > 0){
+            if (displayString == "0" || mathOperators.contains(everythingQueue.lastItem!) || currNumber == ""){
                 print("The number \(content) was pressed creating a new currNumber")
                 displayString = content
                 currNumber = content
+                everythingQueue.enqueue(content)
             } else {
                 print("The number \(content) was pressed and added to currNumber")
                 displayString += content
@@ -198,7 +199,7 @@ class ViewController: UIViewController {
                 numberStack.push(currNumber)
             }
             displayString = currNumber
-            everythingQueue.enqueue(sender.content)
+            everythingQueue.removeAll()
         } else if mathOperators.contains(sender.content) { // +,-,/,* case
             everythingQueue.enqueue(currNumber)
             if operatorQueue.size > 0 {
