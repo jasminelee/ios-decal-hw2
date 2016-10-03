@@ -35,6 +35,36 @@ struct Stack<Element> {
     }
 }
 
+struct Queue<Element> {
+    var items = [String]()
+    mutating func enqueue(_ item: String) {
+        items.append(item)
+    }
+    mutating func dequeue() -> String {
+        return items.removeFirst()
+    }
+    
+    var frontItem: String? {
+        return items.isEmpty ? "" : items[0]
+    }
+    
+    var lastItem: String? {
+        return items.isEmpty ? "" : items[items.count-1]
+    }
+    
+    mutating func removeAll() {
+        items = [String] ()
+    }
+    
+    mutating func all() -> String {
+        let stringRepresentation = items.joined(separator: "")
+        return stringRepresentation
+    }
+    
+    var size: Int {
+        return items.count
+    }
+}
 
 class ViewController: UIViewController {
     // MARK: Width and Height of Screen for Layout
@@ -49,11 +79,11 @@ class ViewController: UIViewController {
     
     // TODO: This looks like a good place to add some data structures.
     //       One data structure is initialized below for reference.
-    var someDataStructure: [String] = [""]
     var numberStack = Stack<String>()
-    var operatorStack = Stack<String>()
+    var operatorQueue = Queue<String>()
     var currNumber = ""
     var displayString = ""
+    var everythingQueue = Queue<String>()
     var mathOperators: [String] = ["+", "-","/","*"]
     
 
@@ -85,7 +115,7 @@ class ViewController: UIViewController {
     // TODO: Ensure that resultLabel gets updated.
     //       Modify this one or create your own.
     func updateResultLabel(_ content: String) {
-        print("Update me like one of those PCs")
+        print("Updated result label to be " + String(content))
         let numChars = content.characters.count
         if numChars <= 7 {
             resultLabel.text = content
@@ -128,11 +158,13 @@ class ViewController: UIViewController {
         let content = sender.content
         guard Int(content) != nil else { return }
         if displayString.characters.count < 7 {
-            print("The number \(content) was pressed and added to the stack")
-            if displayString == "0" {
+            print (operatorQueue, displayString, currNumber, numberStack)
+            if (displayString == "0" || displayString == "") && (operatorQueue.size > 0){
+                print("The number \(content) was pressed creating a new currNumber")
                 displayString = content
                 currNumber = content
             } else {
+                print("The number \(content) was pressed and added to currNumber")
                 displayString += content
                 currNumber += content
             }
@@ -154,21 +186,38 @@ class ViewController: UIViewController {
             currNumber = String(numberInt)
             displayString = displayNumber
         } else if sender.content == "=" {
-            numberStack.push(currNumber)
-            if operatorStack.size > 0 {
+            if operatorQueue.size > 0 {
+                numberStack.push(currNumber)
                 let operand2: Int = Int(numberStack.pop())!
                 let operand1: Int = Int(numberStack.pop())!
-                let operation: String = operatorStack.pop()
+                let operation: String = operatorQueue.dequeue()
                 let result: Int = intCalculate(a: operand1, b: operand2, operation: operation)
                 currNumber = String(result)
                 numberStack.push(currNumber)
+            } else {
+                numberStack.push(currNumber)
             }
             displayString = currNumber
+            everythingQueue.enqueue(sender.content)
         } else if mathOperators.contains(sender.content) { // +,-,/,* case
-            numberStack.push(currNumber)
-            displayString = ""
-            operatorStack.push(sender.content)
-            currNumber = ""
+            everythingQueue.enqueue(currNumber)
+            if operatorQueue.size > 0 {
+                numberStack.push(currNumber)
+                operatorQueue.enqueue(sender.content)
+                let operand2: Int = Int(numberStack.pop())!
+                let operand1: Int = Int(numberStack.pop())!
+                let operation: String = operatorQueue.dequeue()
+                let result: Int = intCalculate(a: operand1, b: operand2, operation: operation)
+                currNumber = String(result)
+                numberStack.push(currNumber)
+                displayString = String(result)
+            } else {
+                numberStack.push(currNumber)
+                operatorQueue.enqueue(sender.content)
+                currNumber = ""
+                displayString = ""
+            }
+            everythingQueue.enqueue(sender.content)
         }
         updateResultLabel(displayString)
     }
