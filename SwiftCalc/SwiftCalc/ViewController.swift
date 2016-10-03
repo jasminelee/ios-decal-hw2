@@ -86,6 +86,8 @@ class ViewController: UIViewController {
     var everythingQueue = Queue<String>()
     var mathOperators: [String] = ["+", "-","/","*"]
     
+    let numberCharacters = NSCharacterSet.decimalDigits
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -163,12 +165,12 @@ class ViewController: UIViewController {
                 print("The number \(content) was pressed creating a new currNumber")
                 displayString = content
                 currNumber = content
-                everythingQueue.enqueue(content)
             } else {
                 print("The number \(content) was pressed and added to currNumber")
                 displayString += content
                 currNumber += content
             }
+            everythingQueue.enqueue(content)
             updateResultLabel(displayString)
         }
     }
@@ -227,9 +229,15 @@ class ViewController: UIViewController {
     func buttonPressed(_ sender: CustomButton) {
        // Fill me in!
         let content = sender.content
-        if currNumber != "0" && content == "0" {
-            currNumber += "0"
-            displayString += "0"
+        if content == "0" {
+            if (everythingQueue.lastItem!.rangeOfCharacter(from: numberCharacters) != nil) {
+                currNumber += "0"
+                displayString += "0"
+            } else {
+                currNumber = "0"
+                displayString = "0"
+                
+            }
             updateResultLabel(displayString)
         }
         
