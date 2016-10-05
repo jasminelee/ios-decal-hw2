@@ -219,6 +219,7 @@ class ViewController: UIViewController {
     
     // REQUIRED: The responder to an operator button being pressed.
     func operatorPressed(_ sender: CustomButton) {
+        print("operatorPressed: \(sender)")
         // Fill me in!
         if sender.content == "C" {
             numberStack.removeAll()
@@ -260,10 +261,13 @@ class ViewController: UIViewController {
     
     // REQUIRED: The responder to a number or operator button being pressed.
     func buttonPressed(_ sender: CustomButton) {
+        print("buttonPressed: \(sender)")
+
        // Fill me in!
+        
         let content = sender.content
         if content == "0" {
-            if (everythingQueue.lastItem!.rangeOfCharacter(from: numberCharacters) != nil) {
+            if (everythingQueue.lastItem!.rangeOfCharacter(from: numberCharacters) != nil || currNumber == ".") {
                 currNumber += "0"
                 displayString += "0"
             } else {
