@@ -27,4 +27,9 @@ class AdvancedCalcUITests: SwiftCalcUITests {
     }
     
     // MARK: A not so hidden test
+    func testDivideByZeros() {
+        let app = XCUIApplication()
+        UIHelper.pressButtons(app, names: ["1", "/", "0", "="])
+        UIHelper.validateStaticText(app, c: "Error")
+    }
 }

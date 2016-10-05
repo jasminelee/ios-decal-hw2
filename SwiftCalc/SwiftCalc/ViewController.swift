@@ -150,9 +150,19 @@ class ViewController: UIViewController {
     
     // TODO: A general calculate method for doubles
     //       Modify this one or create your own.
-    func calculate(a: String, b:String, operation: String) -> Double {
+    func doubleCalculate(a: Double, b:Double, operation: String) -> Double {
         print("Calculation requested for \(a) \(operation) \(b)")
-        return 0.0
+        var result = Double()
+        if operation == "+" {
+            result = a + b
+        } else if operation == "-" {
+            result = a - b
+        } else if operation == "/" {
+            result = a / b
+        } else if operation == "*" {
+            result = a * b
+        }
+        return result
     }
     
     // REQUIRED: The responder to a number button being pressed.
@@ -175,6 +185,38 @@ class ViewController: UIViewController {
         }
     }
     
+    func conversions(content : String) -> String {
+        var result = ""
+        if operatorQueue.size > 0 {
+            numberStack.push(currNumber)
+            if content != "=" {
+                operatorQueue.enqueue(content)
+            }
+            
+            let op2: String = numberStack.pop()
+            let op1: String = numberStack.pop()
+            let operation: String = operatorQueue.dequeue()
+            if op2.contains(".") || op1.contains(".") {
+                let operand2: Double = Double(op2)!
+                let operand1: Double = Double(op1)!
+                let tmp = String(doubleCalculate(a: operand1, b: operand2, operation: operation))
+                result = tmp
+            } else {
+                let operand2: Int = Int(op2)!
+                let operand1: Int = Int(op1)!
+                if operand1 % operand2 != 0 {
+                    let tmp = String(doubleCalculate(a: Double(operand1), b: Double(operand2), operation: operation))
+                    result = tmp
+                } else {
+                    let tmp = String(intCalculate(a: operand1, b: operand2, operation: operation))
+                    result = tmp
+                }
+            }
+        }
+        print(result, numberStack)
+        return result
+    }
+    
     // REQUIRED: The responder to an operator button being pressed.
     func operatorPressed(_ sender: CustomButton) {
         // Fill me in!
@@ -190,12 +232,8 @@ class ViewController: UIViewController {
             displayString = displayNumber
         } else if sender.content == "=" {
             if operatorQueue.size > 0 {
-                numberStack.push(currNumber)
-                let operand2: Int = Int(numberStack.pop())!
-                let operand1: Int = Int(numberStack.pop())!
-                let operation: String = operatorQueue.dequeue()
-                let result: Int = intCalculate(a: operand1, b: operand2, operation: operation)
-                currNumber = String(result)
+                let result: String = conversions(content: sender.content)
+                currNumber = result
                 numberStack.push(currNumber)
             } else {
                 numberStack.push(currNumber)
@@ -205,23 +243,18 @@ class ViewController: UIViewController {
         } else if mathOperators.contains(sender.content) { // +,-,/,* case
             everythingQueue.enqueue(currNumber)
             if operatorQueue.size > 0 {
-                numberStack.push(currNumber)
-                operatorQueue.enqueue(sender.content)
-                let operand2: Int = Int(numberStack.pop())!
-                let operand1: Int = Int(numberStack.pop())!
-                let operation: String = operatorQueue.dequeue()
-                let result: Int = intCalculate(a: operand1, b: operand2, operation: operation)
-                currNumber = String(result)
-                numberStack.push(currNumber)
-                displayString = String(result)
+                let result: String = conversions(content: sender.content)
+                currNumber =  result
+                numberStack.push(result)
+                displayString = result
             } else {
                 numberStack.push(currNumber)
                 operatorQueue.enqueue(sender.content)
                 currNumber = ""
                 displayString = ""
             }
-            everythingQueue.enqueue(sender.content)
         }
+        everythingQueue.enqueue(sender.content)
         updateResultLabel(displayString)
     }
     
@@ -237,9 +270,16 @@ class ViewController: UIViewController {
                 currNumber = "0"
                 displayString = "0"                
             }
-            updateResultLabel(displayString)
+        } else if content == "." {
+            if displayString == "0" {
+                currNumber = "0."
+                displayString = "0."
+            } else {
+                currNumber += "."
+                displayString = currNumber
+            }
         }
-        
+        updateResultLabel(displayString)
     }
     
     // IMPORTANT: Do NOT change any of the code below.

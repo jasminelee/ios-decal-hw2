@@ -34,4 +34,7 @@ class GeneralCalcUITests: SwiftCalcUITests {
     }
     
     // MARK: A Hidden Test.
+    
+    // if many operations pressed, use last one
+    
 }
