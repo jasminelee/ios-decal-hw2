@@ -66,6 +66,8 @@ struct Queue<Element> {
     }
 }
 
+
+
 class ViewController: UIViewController {
     // MARK: Width and Height of Screen for Layout
     var w: CGFloat!
@@ -85,6 +87,7 @@ class ViewController: UIViewController {
     var displayString = ""
     var everythingQueue = Queue<String>()
     var mathOperators: [String] = ["+", "-","/","*"]
+    var err = false
     
     let numberCharacters = NSCharacterSet.decimalDigits
 
@@ -141,7 +144,11 @@ class ViewController: UIViewController {
         } else if operation == "-" {
             result = a - b
         } else if operation == "/" {
-            result = a / b
+            if b == 0 {
+                err = true
+            } else {
+                result = a / b
+            }
         } else if operation == "*" {
             result = a * b
         }
@@ -158,7 +165,11 @@ class ViewController: UIViewController {
         } else if operation == "-" {
             result = a - b
         } else if operation == "/" {
-            result = a / b
+            if b == 0 {
+                err = true
+            } else {
+                result = a / b
+            }
         } else if operation == "*" {
             result = a * b
         }
@@ -200,17 +211,33 @@ class ViewController: UIViewController {
                 let operand2: Double = Double(op2)!
                 let operand1: Double = Double(op1)!
                 let tmp = String(doubleCalculate(a: operand1, b: operand2, operation: operation))
-                result = tmp
+                if err {
+                    result = "Error"
+                } else {
+                    result = tmp
+                }
             } else {
                 let operand2: Int = Int(op2)!
                 let operand1: Int = Int(op1)!
-                if operand1 % operand2 != 0 {
-                    let tmp = String(doubleCalculate(a: Double(operand1), b: Double(operand2), operation: operation))
-                    result = tmp
-                } else {
-                    let tmp = String(intCalculate(a: operand1, b: operand2, operation: operation))
-                    result = tmp
+                var tmp = ""
+                print(operand2, operand1)
+                if operation == "/" && operand2 == 0 {
+                    result = "Error"
+                    return result
                 }
+                
+                if operand1 % operand2 != 0 && (operation == "/" || operation == "-") { //debug
+                    tmp = String(doubleCalculate(a: Double(operand1), b: Double(operand2), operation: operation))
+                    let last2 = tmp.substring(from:tmp.index(tmp.endIndex, offsetBy: -2))
+                    if last2 == ".0" {
+                        var index1 = tmp.index(tmp.endIndex, offsetBy: -2)
+                        tmp = tmp.substring(to: index1)
+                    }
+                    
+                } else {
+                    tmp = String(intCalculate(a: operand1, b: operand2, operation: operation))
+                }
+                result = tmp
             }
         }
         print(result, numberStack)
