@@ -204,16 +204,24 @@ class ViewController: UIViewController {
             } else {
                 let operand2: Int = Int(op2)!
                 let operand1: Int = Int(op1)!
+                if operand2 == 0 && operation == "/" {
+                    result = ""
+                    return result
+                }
                 if operand1 % operand2 != 0 && (operation == "/" || operation == "-"){
                     let tmp = String(doubleCalculate(a: Double(operand1), b: Double(operand2), operation: operation))
-                    result = tmp
+                    if floor(Double(tmp)!) == Double(tmp) {
+                        result = String(Int(Double(tmp)!))
+                    } else {
+                        result = tmp
+                    }
                 } else {
                     let tmp = String(intCalculate(a: operand1, b: operand2, operation: operation))
                     result = tmp
                 }
             }
         }
-        print(result, numberStack)
+        print(result, numberStack, "FUUUUUUUUCK")
         return result
     }
     
@@ -233,7 +241,10 @@ class ViewController: UIViewController {
             displayString = displayNumber
         } else if sender.content == "=" {
             if operatorQueue.size > 0 {
-                let result: String = conversions(content: sender.content)
+                var result: String = conversions(content: sender.content)
+                if result == "" {
+                    result = "Error"
+                }
                 currNumber = result
                 numberStack.push(currNumber)
             } else {
@@ -244,7 +255,10 @@ class ViewController: UIViewController {
         } else if mathOperators.contains(sender.content) { // +,-,/,* case
             everythingQueue.enqueue(currNumber)
             if operatorQueue.size > 0 {
-                let result: String = conversions(content: sender.content)
+                var result: String = conversions(content: sender.content)
+                if result == "" {
+                    result = "Error"
+                }
                 currNumber =  result
                 numberStack.push(result)
                 displayString = result
