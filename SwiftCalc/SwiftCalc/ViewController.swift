@@ -208,7 +208,6 @@ class ViewController: UIViewController {
                     result = ""
                     return result
                 }
-                print(operand2, operand1, operation)
                 if (operation == "/" || operation == "-") && operand1 % operand2 != 0{
                     let tmp = String(doubleCalculate(a: Double(operand1), b: Double(operand2), operation: operation))
                     if floor(Double(tmp)!) == Double(tmp) {
